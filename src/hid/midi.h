@@ -252,7 +252,10 @@ class MidiHandler
     Config               config_;
     Transport            transport_;
     MidiParser           parser_;
-    FIFO<MidiEvent, 256> event_q_;
+    // 64, not 256: each MidiEvent carries a 128-byte SysEx buffer, so 256 of
+    // them took 37 KB of RAM. 64 events is over half a second of dense playing
+    // between two calls of Listen().
+    FIFO<MidiEvent, 64> event_q_;
     MidiEventCallback    realtime_callback_;
 
     static void ParseCallback(uint8_t* data, size_t size, void* context)
