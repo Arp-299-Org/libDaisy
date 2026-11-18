@@ -364,21 +364,21 @@ QSPIHandle::Impl::Write(uint32_t address, uint32_t size, uint8_t* buffer)
         if(NumOfPage == 0) /*!< NumByteToWrite < QSPI_PAGESIZE */
         {
             QSPI_DataNum = size;
-            WritePage(address, QSPI_DataNum, buffer, false);
+            RETURN_IF_ERR(WritePage(address, QSPI_DataNum, buffer, false));
         }
         else /*!< Size > QSPI_PAGESIZE */
         {
             while(NumOfPage--)
             {
                 QSPI_DataNum = flash_page_size;
-                WritePage(address, QSPI_DataNum, buffer, false);
+                RETURN_IF_ERR(WritePage(address, QSPI_DataNum, buffer, false));
                 address += flash_page_size;
                 buffer += flash_page_size;
             }
 
             QSPI_DataNum = NumOfSingle;
             if(QSPI_DataNum > 0)
-                WritePage(address, QSPI_DataNum, buffer, false);
+                RETURN_IF_ERR(WritePage(address, QSPI_DataNum, buffer, false));
         }
     }
     else /*!< Address is not QSPI_PAGESIZE aligned  */
@@ -389,16 +389,16 @@ QSPIHandle::Impl::Write(uint32_t address, uint32_t size, uint8_t* buffer)
             {
                 temp         = NumOfSingle - count;
                 QSPI_DataNum = count;
-                WritePage(address, QSPI_DataNum, buffer, false);
+                RETURN_IF_ERR(WritePage(address, QSPI_DataNum, buffer, false));
                 address += count;
                 buffer += count;
                 QSPI_DataNum = temp;
-                WritePage(address, QSPI_DataNum, buffer, false);
+                RETURN_IF_ERR(WritePage(address, QSPI_DataNum, buffer, false));
             }
             else
             {
                 QSPI_DataNum = size;
-                WritePage(address, QSPI_DataNum, buffer, false);
+                RETURN_IF_ERR(WritePage(address, QSPI_DataNum, buffer, false));
             }
         }
         else /*!< Size > QSPI_PAGESIZE */
@@ -407,14 +407,14 @@ QSPIHandle::Impl::Write(uint32_t address, uint32_t size, uint8_t* buffer)
             NumOfPage    = size / flash_page_size;
             NumOfSingle  = size % flash_page_size;
             QSPI_DataNum = count;
-            WritePage(address, QSPI_DataNum, buffer, false);
+            RETURN_IF_ERR(WritePage(address, QSPI_DataNum, buffer, false));
             address += count;
             buffer += count;
 
             while(NumOfPage--)
             {
                 QSPI_DataNum = flash_page_size;
-                WritePage(address, QSPI_DataNum, buffer, false);
+                RETURN_IF_ERR(WritePage(address, QSPI_DataNum, buffer, false));
                 address += flash_page_size;
                 buffer += flash_page_size;
             }
@@ -422,7 +422,7 @@ QSPIHandle::Impl::Write(uint32_t address, uint32_t size, uint8_t* buffer)
             if(NumOfSingle != 0)
             {
                 QSPI_DataNum = NumOfSingle;
-                WritePage(address, QSPI_DataNum, buffer, false);
+                RETURN_IF_ERR(WritePage(address, QSPI_DataNum, buffer, false));
             }
         }
     }
