@@ -116,7 +116,7 @@ class QSPIHandle::Impl
     // These functions are defined, but we haven't added the ability to switch to quad mode. So they're currently unused.
     QSPIHandle::Result EnterQuadMode() __attribute__((unused));
     QSPIHandle::Result ExitQuadMode() __attribute__((unused));
-    uint8_t            GetStatusRegister() __attribute__((unused));
+    uint8_t            GetStatusRegister();
 
     QSPIHandle::Config config_;
     QSPI_HandleTypeDef halqspi_;
@@ -733,6 +733,12 @@ QSPIHandle::Result QSPIHandle::Impl::QuadEnable()
     QSPI_CommandTypeDef     s_command;
     QSPI_AutoPollingTypeDef s_config;
     uint8_t                 reg = 0;
+
+    // The status register is non-volatile: writing it costs time and wears
+    // the chip. Init runs on every switch between memory-mapped and indirect
+    // mode, so write the register only when it does not already hold QE alone.
+    if(GetStatusRegister() == IS25LP080D_SR_QE)
+        return QSPIHandle::Result::OK;
 
     /* Enable write operations */
     s_command.InstructionMode   = QSPI_INSTRUCTION_1_LINE;
