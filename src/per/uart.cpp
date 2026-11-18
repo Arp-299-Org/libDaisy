@@ -1036,8 +1036,12 @@ void UART_IRQHandler(UartHandler::Impl* handle)
     }
 }
 
+// Weak: RT-1 receives MIDI with its own handlers for USART1 and USART6, which
+// time each byte as it arrives.
 extern "C"
 {
+    void USART1_IRQHandler() __attribute__((weak));
+    void USART6_IRQHandler() __attribute__((weak));
     void USART1_IRQHandler() { UART_IRQHandler(&uart_handles[0]); }
     void USART2_IRQHandler() { UART_IRQHandler(&uart_handles[1]); }
     void USART3_IRQHandler() { UART_IRQHandler(&uart_handles[2]); }
